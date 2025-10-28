@@ -1,0 +1,110 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model TvShows {
+  id           String            @id @default(uuid())
+  title        String
+  synopsis     String
+  cast         String
+  poster       String
+  premiereDate DateTime          @map("premiereDate")
+  originalName String            @map("originalName")
+  tvshowGenres TvShowGenres[]
+  lists        ListTvShow[]
+  ratings      Ratings[]
+  actors       ActorsOnTvShows[]
+  createdAt    DateTime          @default(now()) @map("createdAt")
+}
+
+model Genres {
+  id           String         @id @default(uuid())
+  name         String
+  tvshowGenres TvShowGenres[]
+}
+
+model TvShowGenres {
+  id       String  @id @default(uuid())
+  tvShow   TvShows @relation(fields: [tvShowId], references: [id], onDelete: Cascade)
+  tvShowId String  @map("tvShowId")
+  genre    Genres  @relation(fields: [genreId], references: [id], onDelete: Cascade)
+  genreId  String  @map("genreId")
+}
+
+model Users {
+  id        String    @id @default(uuid())
+  name      String
+  email     String    @unique
+  username  String    @unique
+  password  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  list      Lists[]
+  ratings   Ratings[]
+
+  @@map("users")
+}
+
+model ListTvShow {
+  id       String   @id @default(uuid())
+  list     Lists    @relation(fields: [listId], references: [id])
+  listId   String
+  tvShow   TvShows  @relation(fields: [tvShowId], references: [id])
+  tvShowId String
+  addedAt  DateTime @default(now())
+  order    Int      @default(0)
+}
+
+model Lists {
+  id        String       @id @default(uuid())
+  name      String
+  user      Users        @relation(fields: [userId], references: [id])
+  userId    String
+  tvShows   ListTvShow[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model RatingScale {
+  id      Int       @id @default(autoincrement())
+  label   String
+  ratings Ratings[]
+}
+
+model Ratings {
+  id       String  @id @default(uuid())
+  userId   String
+  tvShowId String
+  scaleId  Int
+  comment  String?
+
+  user   Users       @relation(fields: [userId], references: [id])
+  tvShow TvShows     @relation(fields: [tvShowId], references: [id])
+  scale  RatingScale @relation(fields: [scaleId], references: [id])
+}
+
+model ActorsOnTvShows {
+  id       String  @id @default(uuid())
+  tvShow   TvShows @relation(fields: [tvShowId], references: [id], onDelete: Cascade)
+  tvShowId String
+  actor    Actors  @relation(fields: [actorId], references: [id], onDelete: Cascade)
+  actorId  String
+}
+
+model Actors {
+  id      String            @id @default(uuid())
+  name    String
+  tvShows ActorsOnTvShows[]
+}
