@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express"
-import { AppError } from "../errors"
+import { AppError } from "../utils/errors"
 import { sendResponse } from "../utils/sendResponse"
 
 import user from "../repository/user"

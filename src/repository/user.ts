@@ -1,5 +1,5 @@
 import { prisma } from "../app"
-import { AppError } from "../errors"
+import { AppError } from "../utils/errors"
 import { RegisterUserInput } from "../types"
 import password from "./password"
 

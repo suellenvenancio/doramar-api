@@ -1,6 +1,6 @@
 import { prisma } from "../app"
 import crypto from "crypto"
-import { AppError } from "../errors"
+import { AppError } from "../utils/errors"
 
 const EXPIRATIONS_IN_MILLISECONDS = 60 * 60 * 24 * 30 * 1000 // 30 days
 

@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs"
-import { AppError } from "../errors"
+import { AppError } from "../utils/errors"
 import user from "./user"
 
 async function validate(email: string, password: string) {

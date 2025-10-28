@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express"
 import { genreServices } from "../services/genres.service"
 import { sendResponse } from "../utils/sendResponse"
-import { AppError } from "../errors"
+import { AppError } from "../utils/errors"
 
 export async function getAllGenres(
   req: Request,

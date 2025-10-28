@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express"
 import { actorsService } from "../services/actors.service"
 import { sendResponse } from "../utils/sendResponse"
-import { AppError } from "../errors"
+import { AppError } from "../utils/errors"
 
 export async function getAllActors(
   req: Request,

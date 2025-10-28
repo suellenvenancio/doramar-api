@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express"
 import { sendResponse } from "../utils/sendResponse"
-import { AppError } from "../errors"
+import { AppError } from "../utils/errors"
 import listsServices from "../services/list.service"
 
 export async function getListsByUserId(
