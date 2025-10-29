@@ -1,4 +1,3 @@
-import { tr } from "zod/v4/locales"
 import { prisma } from "../app"
 
 async function getAllTvShows() {
@@ -7,7 +6,7 @@ async function getAllTvShows() {
       include: {
         tvshowGenres: {
           include: {
-            genre: true, // assuming there is a relation to a 'genre' table
+            genre: true,
           },
         },
       },
