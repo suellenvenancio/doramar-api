@@ -4,3 +4,4 @@ node_modules
 
 /src/generated/prisma
 mykoreandramas-firebase-adminsdk-fbsvc-e60595d3a1.json
+.vercel
