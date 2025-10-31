@@ -13,9 +13,9 @@ export function listsRoutes() {
 
   router.get("/user/:userId", authMiddleware, getListsByUserId)
   router.get("/user", authMiddleware, getListsByUserEmail)
-  router.post("/", createList)
-  router.post("/:listId/tvShow/:tvShowId", addTvShowToList)
-  router.patch("/:listId", updateListOrder)
+  router.post("/", authMiddleware, createList)
+  router.post("/:listId/tvShow/:tvShowId", authMiddleware, addTvShowToList)
+  router.patch("/:listId", authMiddleware, updateListOrder)
 
   return router
 }

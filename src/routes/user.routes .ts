@@ -6,15 +6,16 @@ import {
   getUserById,
   updateUser,
 } from "../controller/user.controller"
+import { authMiddleware } from "../middleware"
 
 export function userRoutes() {
   const router = express.Router()
 
-  router.get("/:userId", getUserById)
-  router.get("/", getUserByEmail)
+  router.get("/:userId", authMiddleware, getUserById)
+  router.get("/", authMiddleware, getUserByEmail)
   router.post("/", createUser)
-  router.patch("/", updateUser)
-  router.delete("/:userId", getUserById)
+  router.patch("/", authMiddleware, updateUser)
+  router.delete("/:userId", authMiddleware, getUserById)
 
   return router
 }
