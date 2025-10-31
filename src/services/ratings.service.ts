@@ -5,6 +5,39 @@ export async function createRating(data: {
   tvShowId: string
   scaleId: number
 }) {
+  const existingRating = await prisma.ratings.findFirst({
+    where: {
+      userId: data.userId,
+      tvShowId: data.tvShowId,
+    },
+    include: {
+      tvShow: true,
+      user: {
+        omit: {
+          password: true,
+        },
+      },
+      scale: true,
+    },
+  })
+
+  if (existingRating && existingRating.scaleId === data.scaleId) {
+    return
+  }
+
+  if (existingRating && existingRating.scaleId !== data.scaleId) {
+    await prisma.ratings.update({
+      where: { id: existingRating.id },
+      data: {
+        scaleId: data.scaleId,
+      },
+      include: {
+        scale: true,
+        tvShow: true,
+      },
+    })
+  }
+
   const rating = await prisma.ratings.create({
     data: {
       ...data,
