@@ -11,6 +11,7 @@ export async function createRating(data: {
     },
     include: {
       scale: true,
+      tvShow: true,
     },
   })
 
@@ -92,7 +93,11 @@ export async function updateRating({
 }
 
 async function getRatingScales() {
-  return await prisma.ratingScale.findMany()
+  return await prisma.ratingScale.findMany({
+    orderBy: {
+      id: "asc",
+    },
+  })
 }
 
 const ratingsServices = {
