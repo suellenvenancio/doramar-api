@@ -9,7 +9,6 @@ export async function createRating(
 ) {
   try {
     const { userId, tvShowId, scaleId } = req.params
-    console.log(userId, tvShowId, scaleId)
     const newRating = await ratingsServices.createRating({
       userId,
       tvShowId,
@@ -42,7 +41,8 @@ export async function getRatingsByUserId(
 ) {
   try {
     const { userId } = req.params
-    const ratings = await ratingsServices.getRatingsByTvUserId(userId)
+    console.log(userId)
+    const ratings = await ratingsServices.getRatingsByUserId(userId)
     return sendResponse(res, 200, "Ratings fetched successfully", ratings)
   } catch (error) {
     next(error)

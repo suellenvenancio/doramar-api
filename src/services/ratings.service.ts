@@ -13,11 +13,11 @@ export async function createRating(data: {
       scale: true,
     },
   })
-  console.log(rating)
+
   return rating
 }
 
-export async function getRatingsByTvUserId(userId: string) {
+export async function getRatingsByUserId(userId: string) {
   try {
     const res = await prisma.ratings.findMany({
       where: { userId },
@@ -97,7 +97,7 @@ async function getRatingScales() {
 
 const ratingsServices = {
   createRating,
-  getRatingsByTvUserId,
+  getRatingsByUserId,
   getRatingsByTvShowId,
   updateRating,
   getRatingScales,
