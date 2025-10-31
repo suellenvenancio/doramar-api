@@ -76,14 +76,14 @@ export async function updateListOrder(
   next: NextFunction
 ) {
   try {
-    const { order, tvShowId, user } = req.body
+    const { order, tvShowId, userId } = req.body
     const { listId } = req.params
 
     const updatedList = await listsServices.updateListOrder({
       listId,
       newOrder: order,
       tvShowId,
-      userId: user.id,
+      userId,
     })
     return sendResponse(
       res,

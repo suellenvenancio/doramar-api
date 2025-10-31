@@ -22,11 +22,11 @@ export async function createRating(data: {
   })
 
   if (existingRating && existingRating.scaleId === data.scaleId) {
-    return
+    return existingRating
   }
 
   if (existingRating && existingRating.scaleId !== data.scaleId) {
-    await prisma.ratings.update({
+    return await prisma.ratings.update({
       where: { id: existingRating.id },
       data: {
         scaleId: data.scaleId,
@@ -65,7 +65,6 @@ export async function getRatingsByUserId(userId: string) {
         scale: true,
       },
     })
-    console.log(res)
     return res
   } catch (error) {
     console.error("Error fetching ratings:", error)

@@ -15,7 +15,11 @@ export function ratingsRoutes() {
   router.get("/user/:userId", authMiddleware, getRatingsByUserId)
   router.get("/tvShow/:tvShowId", authMiddleware, getRatingsByTvShowId)
   router.get("/scale", authMiddleware, getRatingScales)
-  router.post("/:scaleId/user/:userId/tvShow/:tvShowId", createRating)
+  router.post(
+    "/:scaleId/user/:userId/tvShow/:tvShowId",
+    authMiddleware,
+    createRating
+  )
   router.patch("/:ratingId", authMiddleware, updateRating)
 
   return router
