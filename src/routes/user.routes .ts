@@ -7,13 +7,15 @@ import {
   updateUser,
 } from "../controller/user.controller"
 import { authMiddleware } from "../middleware"
+import { validateData } from "../middleware/validation"
+import { userSchema } from "../schemas/user.schema"
 
 export function userRoutes() {
   const router = express.Router()
 
   router.get("/:userId", authMiddleware, getUserById)
   router.get("/", authMiddleware, getUserByEmail)
-  router.post("/", createUser)
+  router.post("/", validateData(userSchema), createUser)
   router.patch("/", authMiddleware, updateUser)
   router.delete("/:userId", authMiddleware, getUserById)
 

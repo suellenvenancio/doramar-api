@@ -8,11 +8,12 @@ export async function createRating(
   next: NextFunction
 ) {
   try {
-    const { userId, tvShowId, scaleId } = req.params
+    const { userId, tvShowId, scaleId } = req.body
+
     const newRating = await ratingsServices.createRating({
       userId,
       tvShowId,
-      scaleId: Number(scaleId),
+      scaleId,
     })
     res.status(201).json(newRating)
   } catch (error) {

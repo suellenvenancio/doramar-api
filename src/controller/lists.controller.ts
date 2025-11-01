@@ -40,6 +40,7 @@ export async function createList(
 ) {
   try {
     const listData = req.body
+
     const newList = await listsServices.createList(listData)
     return sendResponse(res, 200, "List create Successfully!", newList)
   } catch (e) {
@@ -56,8 +57,11 @@ export async function addTvShowToList(
     const { listId, tvShowId } = req.params
     const { userId } = req.body
 
-    await listsServices.addTvShowToList({ listId, tvShowId, userId })
-    const list = await listsServices.findListById(listId)
+    const list = await listsServices.addTvShowToList({
+      listId,
+      tvShowId,
+      userId,
+    })
 
     return sendResponse(
       res,

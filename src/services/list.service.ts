@@ -123,12 +123,14 @@ export async function addTvShowToList({
     throw new Error("The TV Show already exists in this list!")
   }
 
-  return prisma.listTvShow.create({
+  const createdList = await prisma.listTvShow.create({
     data: {
       listId: listId,
       tvShowId: tvShowId,
     },
   })
+
+  return await listsServices.findListById(createdList.id)
 }
 
 async function updateListOrder({
