@@ -130,7 +130,7 @@ export async function addTvShowToList({
     },
   })
 
-  return await listsServices.findListById(createdList.id)
+  return await listsServices.findListById(listId)
 }
 
 async function updateListOrder({
