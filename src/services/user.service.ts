@@ -2,7 +2,16 @@ import user from "../repository/user"
 import { RegisterUserInput, User } from "../types"
 
 async function getUserByEmail(email: string) {
-  return await user.validateEmail(email)
+  const foundedUser = await user.validateEmail(email)
+
+  return {
+    id: foundedUser?.id,
+    username: foundedUser?.username,
+    name: foundedUser?.name,
+    email: foundedUser?.email,
+    createdAt: foundedUser?.createdAt,
+    updatedAt: foundedUser?.updatedAt,
+  }
 }
 
 async function getUserById(id: string) {
