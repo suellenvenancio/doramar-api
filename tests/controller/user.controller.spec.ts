@@ -113,6 +113,31 @@ describe("User Controller", () => {
   })
 
   describe("getUserById", () => {
+    it("should throw an error if user not found", async () => {
+      const userId = "1"
+      mockRequest.params = { userId }
+      const user = {
+        id: "1",
+        name: "Test User",
+        email: "test@test.com",
+        username: "testuser",
+        password: "hash",
+        createdAt: new Date("2023-01-01"),
+        updatedAt: new Date("2023-01-01"),
+      }
+
+      jest
+        .spyOn(userService, "getUserById")
+        .mockRejectedValueOnce(new AppError("Email not found!", 404))
+
+      await getUserById(
+        mockRequest as Request,
+        mockResponse as Response,
+        nextFunction
+      )
+      expect(userService.getUserById).toHaveBeenCalledWith(userId)
+      expect(mockResponse.status).toHaveBeenCalledWith(500)
+    })
     it("should get user by id successfully", async () => {
       const userId = "1"
       mockRequest.params = { userId }
@@ -143,6 +168,32 @@ describe("User Controller", () => {
   })
 
   describe("getUserByEmail", () => {
+    it("should throw an error if user not found by email", async () => {
+      const user = {
+        id: "1",
+        name: "Test User",
+        email: "testinho@test.com",
+        username: "testuser",
+        createdAt: new Date("2023-01-01"),
+        updatedAt: new Date("2023-01-01"),
+      }
+
+      const email = "testinho@test.com"
+      mockRequest.query = { email }
+
+      jest
+        .spyOn(userService, "getUserByEmail")
+        .mockRejectedValueOnce(new AppError("User not found!", 404))
+
+      await getUserByEmail(
+        mockRequest as Request,
+        mockResponse as Response,
+        nextFunction
+      )
+
+      expect(userService.getUserByEmail).toHaveBeenCalledWith(email)
+      expect(mockResponse.status).toHaveBeenCalledWith(500)
+    })
     it("should get user by email successfully", async () => {
       const user = {
         id: "1",
