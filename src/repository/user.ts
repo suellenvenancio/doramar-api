@@ -1,6 +1,6 @@
 import { prisma } from "../app"
 import { AppError } from "../utils/errors"
-import { RegisterUserInput } from "../types"
+import { RegisterUserInput, User } from "../types"
 import password from "./password"
 
 async function hashedPasswordObject(register: RegisterUserInput) {
@@ -49,7 +49,37 @@ async function validateEmail(email: string) {
   return user
 }
 
+async function createUser(data: RegisterUserInput) {
+  return await prisma.users.create({
+    data: {
+      ...data,
+    },
+  })
+}
+
+async function updateUser(
+  id: string,
+  data: Partial<Omit<User, "id" | "createdAt">>
+) {
+  return await prisma.users.update({
+    where: { id },
+    data: {
+      ...data,
+      updatedAt: new Date(),
+    },
+  })
+}
+
+async function deleteUser(id: string) {
+  return await prisma.users.delete({
+    where: { id },
+  })
+}
+
 const user = {
+  createUser,
+  updateUser,
+  deleteUser,
   validationUniqueEmail,
   findUserById,
   hashedPasswordObject,

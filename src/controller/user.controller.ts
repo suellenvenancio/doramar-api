@@ -1,14 +1,6 @@
 import { NextFunction, Request, Response } from "express"
-import { AppError } from "../utils/errors"
 import { sendResponse } from "../utils/sendResponse"
-
-import user from "../repository/user"
-
-import dotenv from "dotenv"
-import { RegisterUserInput } from "../types"
 import userService from "../services/user.service"
-
-dotenv.config()
 
 export async function createUser(
   req: Request,
@@ -26,9 +18,12 @@ export async function createUser(
     return sendResponse(res, 201, "User registered successfully", {
       ...user,
     })
-  } catch (error) {
+  } catch (error: Error | any) {
     console.error("Error registering user:", error)
-    return next(new AppError("Error registering user", 500))
+
+    return next(
+      sendResponse(res, 500, error.message || "Error registering user")
+    )
   }
 }
 
@@ -42,7 +37,7 @@ export async function getUserById(
     const user = await userService.getUserById(userId)
     return sendResponse(res, 200, "User returned successfully", user)
   } catch (error) {
-    return next(new AppError("Error getting user", 500))
+    return next(sendResponse(res, 500, "Error getting user by id"))
   }
 }
 
@@ -58,7 +53,7 @@ export async function getUserByEmail(
 
     return sendResponse(res, 200, "User returned successfully", user)
   } catch (error) {
-    return next(new AppError("Error getting user", 500))
+    return next(sendResponse(res, 500, "Error getting user by email"))
   }
 }
 
@@ -73,7 +68,7 @@ export async function updateUser(
     const updatedUser = await userService.updateUser(userId, user)
     return sendResponse(res, 200, "User Successfully updated!", updatedUser)
   } catch (e) {
-    return next(new AppError("Error getting user", 500))
+    return next(sendResponse(res, 500, "Error updating user"))
   }
 }
 
@@ -87,6 +82,6 @@ export async function deleteUserById(
     const user = await userService.deleteUser(userId)
     return sendResponse(res, 200, "User deleted successfully", user)
   } catch (error) {
-    return next(new AppError("Error deleting user", 500))
+    return next(sendResponse(res, 500, "Error deleting user"))
   }
 }

@@ -1,4 +1,3 @@
-import { prisma } from "../app"
 import user from "../repository/user"
 import { RegisterUserInput, User } from "../types"
 
@@ -25,11 +24,7 @@ async function createUser(data: RegisterUserInput) {
     await user.validationUniqueUsername(data.username)
     const newUser = await user.hashedPasswordObject(data)
 
-    return await prisma.users.create({
-      data: {
-        ...newUser,
-      },
-    })
+    return user.createUser(newUser)
   } catch (error) {
     console.error("Error creating user:", error)
     throw error
@@ -46,14 +41,7 @@ async function updateUser(
       await user.validationUniqueUsername(data.email)
     }
 
-    const updatedUser = await prisma.users.update({
-      where: { id },
-      data: {
-        ...data,
-        updatedAt: new Date(),
-      },
-    })
-    return updatedUser
+    return user.updateUser(id, data)
   } catch (error) {
     console.error("Error updating user:", error)
     throw error
@@ -64,9 +52,7 @@ async function deleteUser(id: string) {
   try {
     await user.findUserById(id)
 
-    await prisma.users.delete({
-      where: { id },
-    })
+    await user.deleteUser(id)
   } catch (error) {
     console.error("Error deleting user:", error)
     throw error
