@@ -1,10 +1,13 @@
 import morgan from "morgan"
-import express from "express"
+import express, { Request, Response, NextFunction } from "express"
 import cors from "cors"
 import helmet from "helmet"
 import dotenv from "dotenv"
 
-import { PrismaClient } from "@prisma/client"
+dotenv.config()
+
+import { initializeFirebase } from "./lib/firebase"
+
 import { tvShowsRoutes } from "./routes/tvshows"
 import { listsRoutes } from "./routes/lists.routes"
 import { userRoutes } from "./routes/user.routes "
@@ -12,44 +15,20 @@ import { ratingsRoutes } from "./routes/ratings.routes"
 import { actorsRoutes } from "./routes/actors.routes"
 import { genresRoutes } from "./routes/genres.routes"
 
-import {
-  cert,
-  initializeApp,
-  ServiceAccount,
-  getApps,
-} from "firebase-admin/app"
-import { withAccelerate } from "@prisma/extension-accelerate"
-
-dotenv.config()
-
-if (!getApps().length) {
-  const serviceAccountEnv = process.env.FIREBASE_SERVICE_ACCOUNT
-  if (!serviceAccountEnv) {
-    console.error("Variável de ambiente FIREBASE_SERVICE_ACCOUNT não definida.")
-  } else {
-    try {
-      const serviceAccountJson = Buffer.from(
-        serviceAccountEnv,
-        "base64"
-      ).toString("ascii")
-
-      const serviceAccount = JSON.parse(serviceAccountJson) as ServiceAccount
-
-      initializeApp({
-        credential: cert(serviceAccount),
-      })
-      console.log("Firebase Admin inicializado com sucesso.")
-    } catch (e: any) {
-      console.error("Erro ao inicializar Firebase Admin:", e.message)
-    }
-  }
-}
-
-export const prisma = new PrismaClient().$extends(withAccelerate())
+initializeFirebase()
 const app = express()
+const allowedOrigins = [process.env.CLIENT_URL_PROD, process.env.CLIENT_URL_DEV]
 
-const corsOptions = {
-  origin: [process.env.CLIENT_URL!],
+const corsOptions: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    if (!origin && process.env.NODE_ENV !== "production") {
+      return callback(null, true)
+    }
+    if (origin && allowedOrigins.includes(origin)) {
+      return callback(null, true)
+    }
+    return callback(new Error("Not allowed by CORS"))
+  },
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   credentials: false,
 }
@@ -57,7 +36,8 @@ const corsOptions = {
 app.use(helmet())
 app.use(cors(corsOptions))
 app.use(express.json())
-app.use(morgan("dev"))
+
+app.use(morgan(process.env.NODE_ENV === "production" ? "common" : "dev"))
 
 app.use(`/tvshows`, tvShowsRoutes())
 app.use(`/lists`, listsRoutes())
@@ -65,5 +45,14 @@ app.use(`/users`, userRoutes())
 app.use(`/ratings`, ratingsRoutes())
 app.use(`/actors`, actorsRoutes())
 app.use(`/genres`, genresRoutes())
+
+app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error(err.stack)
+
+  res.status(500).json({
+    message: "Algo deu errado no servidor.",
+    error: process.env.NODE_ENV === "production" ? undefined : err.message,
+  })
+})
 
 export default app

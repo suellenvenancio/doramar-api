@@ -1,96 +1,38 @@
-import { prisma } from "../app"
+import ratingsRepository from "../repository/ratings.repository"
 
 export async function createRating(data: {
   userId: string
   tvShowId: string
   scaleId: number
 }) {
-  const existingRating = await prisma.ratings.findFirst({
-    where: {
-      userId: data.userId,
-      tvShowId: data.tvShowId,
-    },
-    include: {
-      tvShow: true,
-      user: {
-        omit: {
-          password: true,
-        },
-      },
-      scale: true,
-    },
-  })
+  const existingRating = await ratingsRepository.getRatingByUserIdAndTvShowId(
+    data.userId,
+    data.tvShowId
+  )
 
   if (existingRating && existingRating.scaleId === data.scaleId) {
     return existingRating
   }
 
   if (existingRating && existingRating.scaleId !== data.scaleId) {
-    return await prisma.ratings.update({
-      where: { id: existingRating.id },
-      data: {
-        scaleId: data.scaleId,
-      },
-      include: {
-        scale: true,
-        tvShow: true,
-      },
+    return await ratingsRepository.updateRatingScaleId({
+      ratingId: existingRating.id,
+      scaleId: data.scaleId,
     })
   }
 
-  const rating = await prisma.ratings.create({
-    data: {
-      ...data,
-    },
-    include: {
-      scale: true,
-      tvShow: true,
-    },
-  })
-
-  return rating
+  return await ratingsRepository.createRating(data)
 }
 
 export async function getRatingsByUserId(userId: string) {
   try {
-    const res = await prisma.ratings.findMany({
-      where: { userId },
-      include: {
-        tvShow: true,
-        user: {
-          omit: {
-            password: true,
-          },
-        },
-        scale: true,
-      },
-    })
-    return res
+    return await ratingsRepository.getRatingsByUserId(userId)
   } catch (error) {
     console.error("Error fetching ratings:", error)
     throw new Error("Could not fetch ratings!")
   }
 }
-export async function getRatingsByTvShowId(userId: string) {
-  try {
-    const res = await prisma.ratings.findMany({
-      where: { userId },
-      include: {
-        tvShow: {
-          select: {
-            id: true,
-            title: true,
-            poster: true,
-          },
-        },
-      },
-    })
-    return res
-  } catch (error) {
-    console.error("Error fetching ratings:", error)
-    throw new Error("Could not fetch ratings!")
-  }
-}
+
 export async function updateRating({
   scaleId,
   userId,
@@ -101,9 +43,7 @@ export async function updateRating({
   ratingId: string
 }) {
   try {
-    const existingRating = await prisma.ratings.findUnique({
-      where: { id: ratingId },
-    })
+    const existingRating = await ratingsRepository.findRatingById(ratingId)
 
     if (!existingRating || existingRating.userId !== userId) {
       throw new Error(
@@ -111,12 +51,11 @@ export async function updateRating({
       )
     }
 
-    const res = await prisma.ratings.update({
-      where: { id: ratingId },
-      data: {
-        scaleId,
-      },
+    const res = await ratingsRepository.updateRatingScaleId({
+      ratingId,
+      scaleId,
     })
+
     return res
   } catch (error) {
     console.error("Error updating rating:", error)
@@ -125,17 +64,12 @@ export async function updateRating({
 }
 
 async function getRatingScales() {
-  return await prisma.ratingScale.findMany({
-    orderBy: {
-      id: "asc",
-    },
-  })
+  return await ratingsRepository.getRatingScales()
 }
 
 const ratingsServices = {
   createRating,
   getRatingsByUserId,
-  getRatingsByTvShowId,
   updateRating,
   getRatingScales,
 }

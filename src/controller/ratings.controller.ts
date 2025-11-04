@@ -21,20 +21,6 @@ export async function createRating(
   }
 }
 
-export async function getRatingsByTvShowId(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { tvShowId } = req.params
-    const ratings = await ratingsServices.getRatingsByTvShowId(tvShowId)
-    return sendResponse(res, 200, "Ratings fetched successfully", ratings)
-  } catch (error) {
-    next(sendResponse(res, 500, "Internal Server Error"))
-  }
-}
-
 export async function getRatingsByUserId(
   req: Request,
   res: Response,
@@ -42,7 +28,7 @@ export async function getRatingsByUserId(
 ) {
   try {
     const { userId } = req.params
-    console.log(userId)
+
     const ratings = await ratingsServices.getRatingsByUserId(userId)
     return sendResponse(res, 200, "Ratings fetched successfully", ratings)
   } catch (error) {

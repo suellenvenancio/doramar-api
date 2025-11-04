@@ -1,51 +1,12 @@
-import { prisma } from "../app"
+import listsRepository from "../repository/list.repository"
 
 async function findListById(id: string) {
-  const list = await prisma.lists.findUnique({
-    where: { id },
-    include: {
-      tvShows: {
-        include: { tvShow: true },
-      },
-    },
-  })
-
-  return {
-    ...list,
-    tvShows: list?.tvShows
-      .map((tvShow) => ({
-        ...tvShow.tvShow,
-        order: tvShow.order,
-      }))
-      .sort((a, b) => a.order - b.order),
-  }
+  return await listsRepository.findListById(id)
 }
 
 async function getAllListsByUserId(userId: string) {
   try {
-    const allTvShows = await prisma.lists.findMany({
-      where: {
-        userId,
-      },
-      include: {
-        tvShows: {
-          include: { tvShow: true },
-        },
-      },
-    })
-
-    const res = allTvShows.map((list) => {
-      return {
-        ...list,
-        tvShows: list.tvShows
-          .map((tvShow) => ({
-            ...tvShow.tvShow,
-            order: tvShow.order,
-          }))
-          .sort((a, b) => a.order - b.order),
-      }
-    })
-    return res
+    return await listsRepository.getAllListsByUserId(userId)
   } catch (error) {
     console.error("Error fetching TV shows:", error)
     throw new Error("Could not fetch TV shows!")
@@ -53,30 +14,7 @@ async function getAllListsByUserId(userId: string) {
 }
 async function getAllListsByUserEmail(email: string) {
   try {
-    const allTvShows = await prisma.lists.findMany({
-      where: {
-        user: {
-          email,
-        },
-      },
-      include: {
-        tvShows: {
-          include: { tvShow: true },
-        },
-      },
-    })
-    const res = allTvShows.map((list) => {
-      return {
-        ...list,
-        tvShows: list.tvShows
-          .map((tvShow) => ({
-            ...tvShow.tvShow,
-            order: tvShow.order,
-          }))
-          .sort((a, b) => a.order - b.order),
-      }
-    })
-    return res
+    return await listsRepository.getAllListsByUserEmail(email)
   } catch (error) {
     console.error("Error fetching TV shows:", error)
     throw new Error("Could not fetch TV shows!")
@@ -84,11 +22,7 @@ async function getAllListsByUserEmail(email: string) {
 }
 
 async function createList(list: { name: string; userId: string }) {
-  return prisma.lists.create({
-    data: {
-      ...list,
-    },
-  })
+  return await listsRepository.createList(list)
 }
 
 export async function addTvShowToList({
@@ -100,9 +34,7 @@ export async function addTvShowToList({
   tvShowId: string
   userId: string
 }) {
-  const list = await prisma.lists.findUnique({
-    where: { id: listId },
-  })
+  const list = await listsRepository.findListById(listId)
 
   if (!list) {
     throw new Error("List does not exist!")
@@ -112,22 +44,18 @@ export async function addTvShowToList({
     throw new Error("You do not have permission to modify this list!")
   }
 
-  const tvShowIdExistOnTheList = await prisma.listTvShow.findFirst({
-    where: {
-      listId: listId,
-      tvShowId: tvShowId,
-    },
-  })
+  const tvShowIdExistOnTheList = await listsRepository.findTvShowInList(
+    listId,
+    tvShowId
+  )
 
   if (tvShowIdExistOnTheList) {
     throw new Error("The TV Show already exists in this list!")
   }
 
-  await prisma.listTvShow.create({
-    data: {
-      listId: listId,
-      tvShowId: tvShowId,
-    },
+  await listsRepository.addTvShowOnTheList({
+    listId: listId,
+    tvShowId: tvShowId,
   })
 
   return await listsServices.findListById(listId)
@@ -144,17 +72,13 @@ async function updateListOrder({
   tvShowId: string
   userId: string
 }) {
-  const items = await prisma.listTvShow.findMany({
-    where: { listId },
-  })
+  const items = await listsRepository.findListItems(listId)
 
   if (!items.length) {
     throw new Error("A lista está vazia!")
   }
 
-  const list = await prisma.lists.findUnique({
-    where: { id: listId, userId },
-  })
+  const list = await listsRepository.findListByIdAndUserId(listId, userId)
 
   if (!list) {
     throw new Error(
@@ -162,7 +86,6 @@ async function updateListOrder({
     )
   }
 
-  // Ordena os itens pelo campo 'order' antes de manipular
   items.sort((a, b) => a.order - b.order)
 
   const index = items.findIndex((i) => i.tvShowId === tvShowId)
@@ -176,27 +99,20 @@ async function updateListOrder({
   const minOrder = items.length > 0 ? Math.min(...items.map((i) => i.order)) : 0
 
   const updates = items.map((item, idx) =>
-    prisma.listTvShow.update({
-      where: { id: item.id },
-      data: { order: minOrder + idx },
-    })
+    listsRepository.updateItemOrder(item.id, minOrder + idx)
   )
 
-  await prisma.$transaction(updates)
+  await listsRepository.transaction(updates)
 
-  const updatedList = await prisma.lists.findUnique({
-    where: { id: listId },
-    include: {
-      tvShows: {
-        include: { tvShow: true },
-        orderBy: { order: "asc" },
-      },
-    },
-  })
+  const updatedList = await listsRepository.findListById(listId)
+
+  if (!updatedList.tvShows) {
+    throw new Error("Could not fetch updated TV shows!")
+  }
 
   const updatedTvShows = updatedList?.tvShows
     .map((tvShow) => ({
-      ...tvShow.tvShow,
+      ...tvShow,
       order: tvShow.order,
     }))
     .sort((a, b) => a.order - b.order)

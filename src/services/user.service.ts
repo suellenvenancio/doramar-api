@@ -1,4 +1,4 @@
-import user from "../repository/user"
+import user from "../repository/user.repository"
 import { RegisterUserInput, User } from "../types"
 
 async function getUserByEmail(email: string) {

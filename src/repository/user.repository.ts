@@ -1,4 +1,4 @@
-import { prisma } from "../app"
+import { prisma } from "../lib/prisma"
 import { AppError } from "../utils/errors"
 import { RegisterUserInput, User } from "../types"
 import password from "./password"
@@ -20,7 +20,7 @@ async function validationUniqueEmail(email: string) {
 }
 
 async function validationUniqueUsername(username: string) {
-  const user = await prisma.users.findUnique({
+  const user = await prisma.users.findFirst({
     where: { username },
   })
 
@@ -38,15 +38,34 @@ async function findUserById(id: string) {
   if (!user) {
     throw new AppError("User not found!", 404)
   }
-  return user
+  return {
+    id: user.id,
+    username: user.username,
+    name: user.name,
+    email: user.email,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+  }
 }
 
-async function validateEmail(email: string) {
+async function findByEmail(email: string) {
   const user = await prisma.users.findUnique({
     where: { email },
   })
 
-  return user
+  if (!user) {
+    throw new AppError("User not found!", 404)
+  }
+
+  return {
+    id: user.id,
+    username: user.username,
+    name: user.name,
+    email: user.email,
+    password: user.password,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+  }
 }
 
 async function createUser(data: RegisterUserInput) {
@@ -61,17 +80,25 @@ async function updateUser(
   id: string,
   data: Partial<Omit<User, "id" | "createdAt">>
 ) {
-  return await prisma.users.update({
+  const updatedUser = await prisma.users.update({
     where: { id },
     data: {
       ...data,
       updatedAt: new Date(),
     },
   })
+  return {
+    id: updatedUser.id,
+    username: updatedUser.username,
+    name: updatedUser.name,
+    email: updatedUser.email,
+    createdAt: updatedUser.createdAt,
+    updatedAt: updatedUser.updatedAt,
+  }
 }
 
 async function deleteUser(id: string) {
-  return await prisma.users.delete({
+  await prisma.users.delete({
     where: { id },
   })
 }
@@ -84,7 +111,7 @@ const user = {
   findUserById,
   hashedPasswordObject,
   validationUniqueUsername,
-  validateEmail,
+  findByEmail,
 }
 
 export default user

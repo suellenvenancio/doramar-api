@@ -2,6 +2,7 @@ import express from "express"
 
 import {
   createUser,
+  deleteUserById,
   getUserByEmail,
   getUserById,
   updateUser,
@@ -13,11 +14,11 @@ import { userSchema } from "../schemas/user.schema"
 export function userRoutes() {
   const router = express.Router()
 
-  router.get("/:userId", authMiddleware, getUserById)
-  router.get("/", authMiddleware, getUserByEmail)
+  router.get("/:userId", getUserById)
+  router.get("/", getUserByEmail)
   router.post("/", validateData(userSchema), createUser)
-  router.patch("/", authMiddleware, updateUser)
-  router.delete("/:userId", authMiddleware, getUserById)
+  router.patch("/:userId", updateUser)
+  router.delete("/:userId", deleteUserById)
 
   return router
 }

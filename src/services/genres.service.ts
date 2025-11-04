@@ -1,7 +1,7 @@
-import { prisma } from "../app"
+import genreRepository from "../repository/genres.repository"
 
 async function getAllGenres() {
-  return await prisma.genres.findMany()
+  return await genreRepository.getAllGenres()
 }
 
 const genreServices = {

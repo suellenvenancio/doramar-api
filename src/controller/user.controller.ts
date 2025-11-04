@@ -1,6 +1,8 @@
-import { NextFunction, Request, Response } from "express"
+import e, { NextFunction, Request, Response } from "express"
 import { sendResponse } from "../utils/sendResponse"
 import userService from "../services/user.service"
+import { App } from "firebase-admin/app"
+import { AppError } from "../utils/errors"
 
 export async function createUser(
   req: Request,
@@ -36,8 +38,10 @@ export async function getUserById(
     const { userId } = req.params
     const user = await userService.getUserById(userId)
     return sendResponse(res, 200, "User returned successfully", user)
-  } catch (error) {
-    return next(sendResponse(res, 500, "Error getting user by id"))
+  } catch (error: any) {
+    return next(
+      sendResponse(res, 500, error.message || "Error getting user by ID")
+    )
   }
 }
 
@@ -52,8 +56,14 @@ export async function getUserByEmail(
     const user = await userService.getUserByEmail(String(email))
 
     return sendResponse(res, 200, "User returned successfully", user)
-  } catch (error) {
-    return next(sendResponse(res, 500, "Error getting user by email"))
+  } catch (error: unknown) {
+    return next(
+      sendResponse(
+        res,
+        (error as AppError).statusCode || 500,
+        (error as AppError).message || "Error getting user by email"
+      )
+    )
   }
 }
 
@@ -67,8 +77,14 @@ export async function updateUser(
     const user = req.body
     const updatedUser = await userService.updateUser(userId, user)
     return sendResponse(res, 200, "User Successfully updated!", updatedUser)
-  } catch (e) {
-    return next(sendResponse(res, 500, "Error updating user"))
+  } catch (e: unknown) {
+    return next(
+      sendResponse(
+        res,
+        (e as AppError).statusCode || 500,
+        (e as AppError).message || "Error updating user"
+      )
+    )
   }
 }
 
@@ -80,8 +96,14 @@ export async function deleteUserById(
   try {
     const { userId } = req.params
     const user = await userService.deleteUser(userId)
-    return sendResponse(res, 200, "User deleted successfully", user)
-  } catch (error) {
-    return next(sendResponse(res, 500, "Error deleting user"))
+    return sendResponse(res, 200, "User deleted successfully!", user)
+  } catch (error: unknown) {
+    return next(
+      sendResponse(
+        res,
+        (error as AppError).statusCode || 500,
+        (error as AppError).message || "Error deleting user!"
+      )
+    )
   }
 }

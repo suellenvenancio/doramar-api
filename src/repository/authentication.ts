@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs"
 import { AppError } from "../utils/errors"
-import user from "./user"
+import user from "./user.repository"
 
 async function validate(email: string, password: string) {
   try {

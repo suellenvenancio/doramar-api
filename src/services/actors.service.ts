@@ -1,7 +1,7 @@
-import { prisma } from "../app"
+import actorsRepository from "../repository/actors.repository"
 
 async function getAllActors() {
-  return await prisma.actors.findMany()
+  return await actorsRepository.getAllActors()
 }
 
 const actorsService = {
