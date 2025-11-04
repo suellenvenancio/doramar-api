@@ -12,6 +12,6 @@ export async function getAllActors(
     const actors = await actorsService.getAllActors()
     return sendResponse(res, 200, "Actors retrieved successfully", actors)
   } catch (error) {
-    return next(new AppError("Internal server error", 500))
+    return next(sendResponse(res, 500, "Error fetching actors!"))
   }
 }

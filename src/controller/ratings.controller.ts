@@ -29,9 +29,9 @@ export async function getRatingsByTvShowId(
   try {
     const { tvShowId } = req.params
     const ratings = await ratingsServices.getRatingsByTvShowId(tvShowId)
-    res.status(200).json(ratings)
+    return sendResponse(res, 200, "Ratings fetched successfully", ratings)
   } catch (error) {
-    next(error)
+    next(sendResponse(res, 500, "Internal Server Error"))
   }
 }
 
@@ -46,7 +46,7 @@ export async function getRatingsByUserId(
     const ratings = await ratingsServices.getRatingsByUserId(userId)
     return sendResponse(res, 200, "Ratings fetched successfully", ratings)
   } catch (error) {
-    next(error)
+    next(sendResponse(res, 500, "Error fetching ratings by user id"))
   }
 }
 
@@ -66,7 +66,7 @@ export async function updateRating(
     })
     return sendResponse(res, 200, "Rating updated successfully", updatedRating)
   } catch (error) {
-    next(error)
+    next(sendResponse(res, 500, "Error updating rating!"))
   }
 }
 
@@ -79,6 +79,6 @@ export async function getRatingScales(
     const scales = await ratingsServices.getRatingScales()
     return sendResponse(res, 200, "Rating scales fetched successfully", scales)
   } catch (error) {
-    next(error)
+    next(sendResponse(res, 500, "Error fetching rating scales!"))
   }
 }

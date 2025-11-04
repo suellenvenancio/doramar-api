@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express"
 import { sendResponse } from "../utils/sendResponse"
-import { AppError } from "../utils/errors"
 import listsServices from "../services/list.service"
 
 export async function getListsByUserId(
@@ -14,7 +13,7 @@ export async function getListsByUserId(
     return sendResponse(res, 200, "Lists retrieved successfully", allLists)
   } catch (error) {
     console.error("Error fetching Lists:", error)
-    return next(new AppError("Internal server error", 500))
+    return next(sendResponse(res, 500, "Error fetching lists by user id!"))
   }
 }
 
@@ -29,7 +28,7 @@ export async function getListsByUserEmail(
     return sendResponse(res, 200, "Lists retrieved successfully", allTvShows)
   } catch (error) {
     console.error("Error fetching Lists:", error)
-    return next(new AppError("Internal server error", 500))
+    return next(sendResponse(res, 500, "Error fetching lists by user email!"))
   }
 }
 
@@ -44,7 +43,7 @@ export async function createList(
     const newList = await listsServices.createList(listData)
     return sendResponse(res, 200, "List create Successfully!", newList)
   } catch (e) {
-    return next(new AppError("Internal server error", 500))
+    return next(sendResponse(res, 500, "Error creating list!"))
   }
 }
 
@@ -70,7 +69,7 @@ export async function addTvShowToList(
       list
     )
   } catch (error) {
-    return next(new AppError("Internal server error", 500))
+    return next(sendResponse(res, 500, "Error adding TV Show to the list!"))
   }
 }
 
@@ -97,6 +96,6 @@ export async function updateListOrder(
     )
   } catch (error) {
     console.error("Error updating list order:", error)
-    return next(new AppError("Internal server error", 500))
+    return next(sendResponse(res, 500, "Error updating list order!"))
   }
 }

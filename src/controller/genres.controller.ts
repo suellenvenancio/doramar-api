@@ -12,6 +12,6 @@ export async function getAllGenres(
     const genres = await genreServices.getAllGenres()
     return sendResponse(res, 200, "Genres retrieved successfully", genres)
   } catch (error) {
-    return next(new AppError("Internal server error", 500))
+    return next(sendResponse(res, 500, "Error fetching genres!"))
   }
 }
