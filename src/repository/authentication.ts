@@ -4,7 +4,7 @@ import user from "./user"
 
 async function validate(email: string, password: string) {
   try {
-    const findedUser = await user.validateEmail(email)
+    const findedUser = await user.findByEmail(email)
     await validatePassword(password, findedUser?.password ?? "")
 
     return user
