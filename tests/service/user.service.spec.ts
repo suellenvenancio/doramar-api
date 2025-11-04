@@ -2,6 +2,7 @@ import user from "../../src/repository/user"
 import userService from "../../src/services/user.service"
 import { AppError } from "../../src/utils/errors"
 
+jest.spyOn(console, "error").mockImplementation(() => {})
 describe("User Service", () => {
   describe("updateUser", () => {
     beforeEach(() => {
