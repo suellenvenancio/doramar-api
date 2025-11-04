@@ -2,7 +2,7 @@ import user from "../repository/user"
 import { RegisterUserInput, User } from "../types"
 
 async function getUserByEmail(email: string) {
-  const foundedUser = await user.validateEmail(email)
+  const foundedUser = await user.findByEmail(email)
 
   return {
     id: foundedUser?.id,
@@ -45,9 +45,14 @@ async function updateUser(
   data: Partial<Omit<User, "id" | "createdAt">>
 ) {
   try {
-    if (data.email) {
+    const foundedUser = await user.findUserById(id)
+
+    if (data.email && data.email !== foundedUser.email) {
       await user.validationUniqueEmail(data.email)
-      await user.validationUniqueUsername(data.email)
+    }
+
+    if (data.username && data.username !== foundedUser.username) {
+      await user.validationUniqueUsername(data.username)
     }
 
     return user.updateUser(id, data)
