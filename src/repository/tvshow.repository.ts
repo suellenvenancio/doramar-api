@@ -62,14 +62,9 @@ async function updateTvShow(tvShowId: string, tvShowData: Tvshows) {
 }
 
 async function deleteTvShow(tvShowId: string) {
-  try {
-    return await prisma.tvShows.delete({
-      where: { id: tvShowId },
-    })
-  } catch (error) {
-    console.error("Error deleting TV show:", error)
-    throw new Error("Could not delete TV show!")
-  }
+  return await prisma.tvShows.delete({
+    where: { id: tvShowId },
+  })
 }
 
 const tvShowRepository = {
