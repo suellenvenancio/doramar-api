@@ -7,13 +7,12 @@ import dotenv from "dotenv"
 dotenv.config()
 
 import { initializeFirebase } from "./lib/firebase"
-
-import { tvShowsRoutes } from "./routes/tvshows"
-import { listsRoutes } from "./routes/lists.routes"
-import { userRoutes } from "./routes/user.routes "
-import { ratingsRoutes } from "./routes/ratings.routes"
-import { actorsRoutes } from "./routes/actors.routes"
 import { genresRoutes } from "./routes/genres.routes"
+import { actorsRoutes } from "./routes/actors.routes"
+import { ratingsRoutes } from "./routes/ratings.routes"
+import { userRoutes } from "./routes/user.routes "
+import { listsRoutes } from "./routes/lists.routes"
+import { tvShowsRoutes } from "./routes/tvshows.routes"
 
 initializeFirebase()
 const app = express()
