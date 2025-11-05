@@ -18,7 +18,9 @@ initializeFirebase()
 const app = express()
 
 const corsOptions: cors.CorsOptions = {
-  origin: process.env.CLIENT_URL_PROD!,
+  origin: (origin, callback) => {
+    return callback(null, true)
+  },
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   credentials: false,
 }
