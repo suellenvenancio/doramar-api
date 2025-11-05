@@ -14,11 +14,11 @@ import { userSchema } from "../schemas/user.schema"
 export function userRoutes() {
   const router = express.Router()
 
-  router.get("/:userId", getUserById)
-  router.get("/", getUserByEmail)
+  router.get("/:userId", authMiddleware, getUserById)
+  router.get("/", authMiddleware, getUserByEmail)
   router.post("/", validateData(userSchema), createUser)
-  router.patch("/:userId", updateUser)
-  router.delete("/:userId", deleteUserById)
+  router.patch("/:userId", authMiddleware, updateUser)
+  router.delete("/:userId", authMiddleware, deleteUserById)
 
   return router
 }

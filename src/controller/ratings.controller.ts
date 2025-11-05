@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express"
 import ratingsServices from "../services/ratings.service"
 import { sendResponse } from "../utils/sendResponse"
+import { AppError } from "../utils/errors"
 
 export async function createRating(
   req: Request,
@@ -15,9 +16,15 @@ export async function createRating(
       tvShowId,
       scaleId,
     })
-    res.status(201).json(newRating)
+    return sendResponse(res, 201, "Rating created successfully!", newRating)
   } catch (error) {
-    next(error)
+    next(
+      sendResponse(
+        res,
+        (error as AppError).statusCode || 500,
+        (error as AppError).message || "Error creating rating!"
+      )
+    )
   }
 }
 
@@ -32,27 +39,13 @@ export async function getRatingsByUserId(
     const ratings = await ratingsServices.getRatingsByUserId(userId)
     return sendResponse(res, 200, "Ratings fetched successfully", ratings)
   } catch (error) {
-    next(sendResponse(res, 500, "Error fetching ratings by user id"))
-  }
-}
-
-export async function updateRating(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const { ratingId } = req.params
-    const { scaleId, userId } = req.body
-
-    const updatedRating = await ratingsServices.updateRating({
-      ratingId,
-      scaleId,
-      userId,
-    })
-    return sendResponse(res, 200, "Rating updated successfully", updatedRating)
-  } catch (error) {
-    next(sendResponse(res, 500, "Error updating rating!"))
+    next(
+      sendResponse(
+        res,
+        (error as AppError).statusCode || 500,
+        (error as AppError).message || "Error fetching ratings by user id"
+      )
+    )
   }
 }
 
@@ -65,6 +58,54 @@ export async function getRatingScales(
     const scales = await ratingsServices.getRatingScales()
     return sendResponse(res, 200, "Rating scales fetched successfully", scales)
   } catch (error) {
-    next(sendResponse(res, 500, "Error fetching rating scales!"))
+    next(
+      sendResponse(
+        res,
+        (error as AppError).statusCode || 500,
+        (error as AppError).message || "Error fetching rating scales!"
+      )
+    )
+  }
+}
+
+export async function createRatingScale(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { id, label } = req.body
+
+    const newScale = await ratingsServices.createRatingScale({ id, label })
+    return sendResponse(res, 201, "Rating scale created successfully", newScale)
+  } catch (error) {
+    next(
+      sendResponse(
+        res,
+        (error as AppError).statusCode || 500,
+        (error as AppError).message || "Error creating rating scale!"
+      )
+    )
+  }
+}
+
+export async function getRatingById(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const { ratingId } = req.params
+
+    const rating = await ratingsServices.getRatingById(ratingId)
+    return sendResponse(res, 200, "Rating fetched successfully", rating)
+  } catch (error) {
+    next(
+      sendResponse(
+        res,
+        (error as AppError).statusCode || 500,
+        (error as AppError).message || "Error fetching rating by id"
+      )
+    )
   }
 }

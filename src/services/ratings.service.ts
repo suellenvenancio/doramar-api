@@ -1,76 +1,61 @@
 import ratingsRepository from "../repository/ratings.repository"
+import tvShowRepository from "../repository/tvshow.repository"
+import { AppError } from "../utils/errors"
 
-export async function createRating(data: {
+export async function createRating({
+  userId,
+  tvShowId,
+  scaleId,
+}: {
   userId: string
   tvShowId: string
   scaleId: number
 }) {
+  const existingTvShow = await tvShowRepository.findTvShowById(tvShowId)
+  if (!existingTvShow) {
+    throw new AppError("TV Show not found!", 404)
+  }
+
   const existingRating = await ratingsRepository.getRatingByUserIdAndTvShowId(
-    data.userId,
-    data.tvShowId
+    userId,
+    tvShowId
   )
 
-  if (existingRating && existingRating.scaleId === data.scaleId) {
+  if (existingRating && existingRating.scaleId === scaleId) {
     return existingRating
   }
 
-  if (existingRating && existingRating.scaleId !== data.scaleId) {
+  if (existingRating && existingRating.scaleId !== scaleId) {
     return await ratingsRepository.updateRatingScaleId({
       ratingId: existingRating.id,
-      scaleId: data.scaleId,
+      scaleId,
     })
   }
 
-  return await ratingsRepository.createRating(data)
+  return await ratingsRepository.createRating({ userId, tvShowId, scaleId })
 }
 
 export async function getRatingsByUserId(userId: string) {
-  try {
-    return await ratingsRepository.getRatingsByUserId(userId)
-  } catch (error) {
-    console.error("Error fetching ratings:", error)
-    throw new Error("Could not fetch ratings!")
-  }
-}
-
-export async function updateRating({
-  scaleId,
-  userId,
-  ratingId,
-}: {
-  scaleId: number
-  userId: string
-  ratingId: string
-}) {
-  try {
-    const existingRating = await ratingsRepository.findRatingById(ratingId)
-
-    if (!existingRating || existingRating.userId !== userId) {
-      throw new Error(
-        "Rating not found or you do not have permission to modify this rating!"
-      )
-    }
-
-    const res = await ratingsRepository.updateRatingScaleId({
-      ratingId,
-      scaleId,
-    })
-
-    return res
-  } catch (error) {
-    console.error("Error updating rating:", error)
-    throw new Error("Could not update rating!")
-  }
+  return await ratingsRepository.getRatingsByUserId(userId)
 }
 
 async function getRatingScales() {
   return await ratingsRepository.getRatingScales()
 }
 
+async function createRatingScale({ id, label }: { id: number; label: string }) {
+  return await ratingsRepository.createRatingScale(id, label)
+}
+
+async function getRatingById(ratingId: string) {
+  return await ratingsRepository.getRatingById(ratingId)
+}
+
 const ratingsServices = {
+  createRatingScale,
   createRating,
   getRatingsByUserId,
-  updateRating,
+  getRatingById,
   getRatingScales,
 }
 

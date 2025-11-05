@@ -3,9 +3,9 @@ export interface Tvshows {
   synopsis: string
   cast: string
   poster: string
-  premierdate: string
-  originalname: string
-  created_at: Date
+  premiereDate: string
+  originalName: string
+  createdAt: Date
 }
 
 export interface RegisterUserInput {

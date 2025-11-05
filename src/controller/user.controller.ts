@@ -1,7 +1,6 @@
-import e, { NextFunction, Request, Response } from "express"
+import { NextFunction, Request, Response } from "express"
 import { sendResponse } from "../utils/sendResponse"
 import userService from "../services/user.service"
-import { App } from "firebase-admin/app"
 import { AppError } from "../utils/errors"
 
 export async function createUser(
@@ -24,7 +23,11 @@ export async function createUser(
     console.error("Error registering user:", error)
 
     return next(
-      sendResponse(res, 500, error.message || "Error registering user")
+      sendResponse(
+        res,
+        (error as AppError).statusCode || 500,
+        (error as AppError).message || "Error registering user"
+      )
     )
   }
 }
@@ -38,9 +41,13 @@ export async function getUserById(
     const { userId } = req.params
     const user = await userService.getUserById(userId)
     return sendResponse(res, 200, "User returned successfully", user)
-  } catch (error: any) {
+  } catch (error: unknown) {
     return next(
-      sendResponse(res, 500, error.message || "Error getting user by ID")
+      sendResponse(
+        res,
+        (error as AppError).statusCode || 500,
+        (error as AppError).message || "Error getting user by ID"
+      )
     )
   }
 }

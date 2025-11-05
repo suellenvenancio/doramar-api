@@ -1,27 +1,25 @@
 import listsRepository from "../repository/list.repository"
+import tvShowRepository from "../repository/tvshow.repository"
+import { AppError } from "../utils/errors"
 
 async function findListById(id: string) {
   return await listsRepository.findListById(id)
 }
 
 async function getAllListsByUserId(userId: string) {
-  try {
-    return await listsRepository.getAllListsByUserId(userId)
-  } catch (error) {
-    console.error("Error fetching TV shows:", error)
-    throw new Error("Could not fetch TV shows!")
-  }
+  return await listsRepository.getAllListsByUserId(userId)
 }
 async function getAllListsByUserEmail(email: string) {
-  try {
-    return await listsRepository.getAllListsByUserEmail(email)
-  } catch (error) {
-    console.error("Error fetching TV shows:", error)
-    throw new Error("Could not fetch TV shows!")
-  }
+  return await listsRepository.getAllListsByUserEmail(email)
 }
 
 async function createList(list: { name: string; userId: string }) {
+  const existingList = await listsRepository.findListByNameAndUserId(list)
+
+  if (existingList) {
+    throw new AppError("List with this name already exists for the user!", 400)
+  }
+
   return await listsRepository.createList(list)
 }
 
@@ -36,26 +34,38 @@ export async function addTvShowToList({
 }) {
   const list = await listsRepository.findListById(listId)
 
-  if (!list) {
-    throw new Error("List does not exist!")
+  if (!list.tvShows && !list.id) {
+    throw new AppError("List does not exist!", 404)
   }
 
   if (list.userId !== userId) {
-    throw new Error("You do not have permission to modify this list!")
+    throw new AppError("You do not have permission to modify this list!", 403)
   }
 
-  const tvShowIdExistOnTheList = await listsRepository.findTvShowInList(
+  const tvShow = await tvShowRepository.findTvShowById(tvShowId)
+
+  if (!tvShow) {
+    throw new AppError("TV Show does not exist!", 404)
+  }
+
+  const tvShowIdExistOnTheList = await listsRepository.findTvShowInList({
     listId,
-    tvShowId
-  )
+    tvShowId,
+  })
 
   if (tvShowIdExistOnTheList) {
-    throw new Error("The TV Show already exists in this list!")
+    throw new AppError("The TV Show already exists in this list!", 400)
+  }
+
+  let lastItemOfListOrder = 1
+  if (list.tvShows && list.tvShows.length > 0) {
+    lastItemOfListOrder = list.tvShows[list.tvShows.length - 1].order
   }
 
   await listsRepository.addTvShowOnTheList({
     listId: listId,
     tvShowId: tvShowId,
+    order: lastItemOfListOrder,
   })
 
   return await listsServices.findListById(listId)
@@ -72,31 +82,35 @@ async function updateListOrder({
   tvShowId: string
   userId: string
 }) {
-  const items = await listsRepository.findListItems(listId)
-
-  if (!items.length) {
-    throw new Error("A lista está vazia!")
-  }
-
   const list = await listsRepository.findListByIdAndUserId(listId, userId)
 
   if (!list) {
-    throw new Error(
-      "List does not exist or you do not have permission to modify this list!"
+    throw new AppError(
+      "List does not exist or you do not have permission to modify this list!",
+      404
     )
+  }
+
+  const items = await listsRepository.findListItems(listId)
+
+  if (!items.length) {
+    throw new AppError("This list has no items to reorder!", 400)
   }
 
   items.sort((a, b) => a.order - b.order)
 
   const index = items.findIndex((i) => i.tvShowId === tvShowId)
-  if (index === -1) throw new Error("Item não encontrado nessa lista")
+  if (index === -1) {
+    throw new AppError("TV Show not found in the list!", 404)
+  }
 
   const [movedItem] = items.splice(index, 1)
 
-  const targetIndex = Math.max(0, Math.min(newOrder, items.length))
+  const targetIndex = Math.max(0, Math.min(newOrder - 1, items.length))
   items.splice(targetIndex, 0, movedItem)
 
-  const minOrder = items.length > 0 ? Math.min(...items.map((i) => i.order)) : 0
+  const minOrder =
+    items.length > 0 ? Math.max(1, Math.min(...items.map((i) => i.order))) : 1
 
   const updates = items.map((item, idx) =>
     listsRepository.updateItemOrder(item.id, minOrder + idx)

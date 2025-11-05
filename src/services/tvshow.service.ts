@@ -1,4 +1,6 @@
 import tvShowRepository from "../repository/tvshow.repository"
+import { Tvshows } from "../types"
+import { AppError } from "../utils/errors"
 
 async function getAllTvShows() {
   try {
@@ -9,7 +11,12 @@ async function getAllTvShows() {
   }
 }
 
+async function createTvShow(params: Tvshows) {
+  return await tvShowRepository.createTvShow(params)
+}
+
 const tvshowsServices = {
+  createTvShow,
   getAllTvShows,
 }
 

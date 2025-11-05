@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express"
 import { sendResponse } from "../utils/sendResponse"
 import listsServices from "../services/list.service"
+import { AppError } from "../utils/errors"
 
 export async function getListsByUserId(
   req: Request,
@@ -13,7 +14,13 @@ export async function getListsByUserId(
     return sendResponse(res, 200, "Lists retrieved successfully", allLists)
   } catch (error) {
     console.error("Error fetching Lists:", error)
-    return next(sendResponse(res, 500, "Error fetching lists by user id!"))
+    return next(
+      sendResponse(
+        res,
+        (error as AppError).statusCode || 500,
+        (error as AppError).message || "Error fetching lists by user id!"
+      )
+    )
   }
 }
 
@@ -28,7 +35,13 @@ export async function getListsByUserEmail(
     return sendResponse(res, 200, "Lists retrieved successfully", allTvShows)
   } catch (error) {
     console.error("Error fetching Lists:", error)
-    return next(sendResponse(res, 500, "Error fetching lists by user email!"))
+    return next(
+      sendResponse(
+        res,
+        (error as AppError).statusCode || 500,
+        (error as AppError).message || "Error fetching lists by user email!"
+      )
+    )
   }
 }
 
@@ -41,9 +54,15 @@ export async function createList(
     const listData = req.body
 
     const newList = await listsServices.createList(listData)
-    return sendResponse(res, 200, "List create Successfully!", newList)
+    return sendResponse(res, 201, "List created successfully!", newList)
   } catch (e) {
-    return next(sendResponse(res, 500, "Error creating list!"))
+    return next(
+      sendResponse(
+        res,
+        (e as AppError).statusCode || 500,
+        (e as AppError).message || "Error creating list!"
+      )
+    )
   }
 }
 
@@ -69,7 +88,14 @@ export async function addTvShowToList(
       list
     )
   } catch (error) {
-    return next(sendResponse(res, 500, "Error adding TV Show to the list!"))
+    console.error("Error adding TV Show to the list:", error)
+    return next(
+      sendResponse(
+        res,
+        (error as AppError).statusCode || 500,
+        (error as AppError).message || "Error adding TV Show to the list!"
+      )
+    )
   }
 }
 
@@ -96,6 +122,12 @@ export async function updateListOrder(
     )
   } catch (error) {
     console.error("Error updating list order:", error)
-    return next(sendResponse(res, 500, "Error updating list order!"))
+    return next(
+      sendResponse(
+        res,
+        (error as AppError).statusCode || 500,
+        (error as AppError).message || "Error updating list order!"
+      )
+    )
   }
 }
