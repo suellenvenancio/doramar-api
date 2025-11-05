@@ -4,8 +4,6 @@ import cors from "cors"
 import helmet from "helmet"
 import dotenv from "dotenv"
 
-dotenv.config()
-
 import { initializeFirebase } from "./lib/firebase"
 import { genresRoutes } from "./routes/genres.routes"
 import { actorsRoutes } from "./routes/actors.routes"
@@ -14,10 +12,12 @@ import { userRoutes } from "./routes/user.routes "
 import { listsRoutes } from "./routes/lists.routes"
 import { tvShowsRoutes } from "./routes/tvshows.routes"
 
+dotenv.config()
+
 initializeFirebase()
 const app = express()
 const allowedOrigins = [process.env.CLIENT_URL_PROD, process.env.CLIENT_URL_DEV]
-
+console.log(allowedOrigins)
 const corsOptions: cors.CorsOptions = {
   origin: (origin, callback) => {
     if (!origin && process.env.NODE_ENV !== "production") {
