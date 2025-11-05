@@ -1,9 +1,9 @@
-import password from "../../src/repository/password"
 import user from "../../src/repository/user.repository"
 import userService from "../../src/services/user.service"
 import { AppError } from "../../src/utils/errors"
 
 jest.spyOn(console, "error").mockImplementation(() => {})
+
 describe("User Service", () => {
   describe("updateUser", () => {
     beforeEach(() => {
@@ -163,7 +163,7 @@ describe("User Service", () => {
       const result = await userService.getUserByEmail(mockEmail)
 
       expect(user.findByEmail).toHaveBeenCalledWith(mockEmail)
-      expect(result).toEqual(mockUser)
+      expect(result).toEqual({ ...mockUser, password: undefined })
     })
   })
 
