@@ -1,6 +1,7 @@
 import request from "supertest"
 import app from "../../src/app"
-import { de } from "zod/v4/locales"
+
+jest.spyOn(console, "error").mockImplementation(() => {})
 
 describe("E2E Ratings Test", () => {
   const fakeToken = "fake-firebase-token"

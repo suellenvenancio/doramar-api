@@ -1,7 +1,5 @@
 import request from "supertest"
 import app from "../../src/app"
-import { title } from "process"
-import { create } from "domain"
 
 jest.spyOn(console, "error").mockImplementation(() => {})
 
