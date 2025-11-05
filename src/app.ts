@@ -20,6 +20,7 @@ const allowedOrigins = [
   process.env.CLIENT_URL_PROD!,
   process.env.CLIENT_URL_DEV!,
 ]
+console.log(process.env.CLIENT_URL_PROD, process.env.CLIENT_URL_DEV, "*****")
 
 const corsOptions: cors.CorsOptions = {
   origin: allowedOrigins,
