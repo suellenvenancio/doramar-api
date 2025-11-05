@@ -1,4 +1,5 @@
-import user from "../../src/repository/user"
+import password from "../../src/repository/password"
+import user from "../../src/repository/user.repository"
 import userService from "../../src/services/user.service"
 import { AppError } from "../../src/utils/errors"
 
@@ -154,6 +155,7 @@ describe("User Service", () => {
         name: "Test User",
         createdAt: new Date(),
         updatedAt: new Date(),
+        password: "hashedpassword",
       }
 
       jest.spyOn(user, "findByEmail").mockResolvedValueOnce(mockUser)
