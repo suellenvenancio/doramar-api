@@ -2,6 +2,7 @@ import { prisma } from "../lib/prisma"
 import { AppError } from "../utils/errors"
 import { RegisterUserInput, User } from "../types"
 import password from "./password"
+import { ca } from "zod/v4/locales"
 
 async function hashedPasswordObject(register: RegisterUserInput) {
   const passwordHashed = await password.hash(register.password)
@@ -38,6 +39,7 @@ async function findUserById(id: string) {
   if (!user) {
     throw new AppError("User not found!", 404)
   }
+
   return {
     id: user.id,
     username: user.username,
@@ -69,38 +71,53 @@ async function findByEmail(email: string) {
 }
 
 async function createUser(data: RegisterUserInput) {
-  return await prisma.users.create({
-    data: {
-      ...data,
-    },
-  })
+  try {
+    return await prisma.users.create({
+      data: {
+        ...data,
+      },
+    })
+  } catch (error) {
+    console.error("Error creating user:", error)
+    throw new Error("Could not create user!")
+  }
 }
 
 async function updateUser(
   id: string,
   data: Partial<Omit<User, "id" | "createdAt">>
 ) {
-  const updatedUser = await prisma.users.update({
-    where: { id },
-    data: {
-      ...data,
-      updatedAt: new Date(),
-    },
-  })
-  return {
-    id: updatedUser.id,
-    username: updatedUser.username,
-    name: updatedUser.name,
-    email: updatedUser.email,
-    createdAt: updatedUser.createdAt,
-    updatedAt: updatedUser.updatedAt,
+  try {
+    const updatedUser = await prisma.users.update({
+      where: { id },
+      data: {
+        ...data,
+        updatedAt: new Date(),
+      },
+    })
+    return {
+      id: updatedUser.id,
+      username: updatedUser.username,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      createdAt: updatedUser.createdAt,
+      updatedAt: updatedUser.updatedAt,
+    }
+  } catch (error) {
+    console.error("Error updating user:", error)
+    throw new Error("Could not update user!")
   }
 }
 
 async function deleteUser(id: string) {
-  await prisma.users.delete({
-    where: { id },
-  })
+  try {
+    await prisma.users.delete({
+      where: { id },
+    })
+  } catch (error) {
+    console.error("Error deleting user:", error)
+    throw new Error("Could not delete user!")
+  }
 }
 
 const user = {

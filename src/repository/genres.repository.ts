@@ -1,7 +1,12 @@
 import { prisma } from "../lib/prisma"
 
 async function getAllGenres() {
-  return await prisma.genres.findMany()
+  try {
+    return await prisma.genres.findMany()
+  } catch (error) {
+    console.error("Error fetching genres:", error)
+    throw new Error("Failed to fetch genres")
+  }
 }
 
 const genreRepository = {
