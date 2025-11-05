@@ -20,13 +20,7 @@ const allowedOrigins = [process.env.CLIENT_URL_PROD, process.env.CLIENT_URL_DEV]
 console.log(allowedOrigins)
 const corsOptions: cors.CorsOptions = {
   origin: (origin, callback) => {
-    if (!origin && process.env.NODE_ENV !== "production") {
-      return callback(null, true)
-    }
-    if (origin && allowedOrigins.includes(origin)) {
-      return callback(null, true)
-    }
-    return callback(new Error("Not allowed by CORS"))
+    return callback(null, true)
   },
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
   credentials: false,
