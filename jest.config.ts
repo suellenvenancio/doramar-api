@@ -7,6 +7,7 @@ const config: Config = {
     "^.+\\.(t|j)sx?$": "@swc/jest",
   },
   clearMocks: true,
+  testPathIgnorePatterns: ["/node_modules/", "/dist/", "/tests/e2e"],
 }
 
 export default config

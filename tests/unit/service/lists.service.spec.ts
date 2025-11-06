@@ -86,7 +86,7 @@ describe("List service", () => {
       ).rejects.toThrow("TV Show not found in the list!")
     })
 
-    it("should throw if the tv show does not exist in the list", async () => {
+    it("should update the list order", async () => {
       const mockList = {
         id: "list123",
         name: "My List",
@@ -261,7 +261,7 @@ describe("List service", () => {
       ).rejects.toThrow("List does not exist!")
     })
 
-    it("should throw an error if list does not exist", async () => {
+    it("should throw an error if tv show does not exist", async () => {
       jest.spyOn(listsRepository, "findListById").mockResolvedValueOnce({
         id: "list123",
         name: "My List",
