@@ -8,4 +8,4 @@ const actorsService = {
   getAllActors,
 }
 
-export { actorsService }
+export default actorsService

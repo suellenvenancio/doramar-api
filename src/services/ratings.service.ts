@@ -51,7 +51,7 @@ async function getRatingById(ratingId: string) {
   return await ratingsRepository.getRatingById(ratingId)
 }
 
-const ratingsServices = {
+const ratingsService = {
   createRatingScale,
   createRating,
   getRatingsByUserId,
@@ -59,4 +59,4 @@ const ratingsServices = {
   getRatingScales,
 }
 
-export default ratingsServices
+export default ratingsService

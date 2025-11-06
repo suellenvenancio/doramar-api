@@ -68,7 +68,7 @@ export async function addTvShowToList({
     order: lastItemOfListOrder,
   })
 
-  return await listsServices.findListById(listId)
+  return await listsService.findListById(listId)
 }
 
 async function updateListOrder({
@@ -137,7 +137,7 @@ async function updateListOrder({
   }
 }
 
-const listsServices = {
+const listsService = {
   getAllListsByUserId,
   createList,
   addTvShowToList,
@@ -146,4 +146,4 @@ const listsServices = {
   findListById,
 }
 
-export default listsServices
+export default listsService

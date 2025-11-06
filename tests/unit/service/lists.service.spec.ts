@@ -1,7 +1,6 @@
 import listsService from "../../../src/services/list.service"
 import listsRepository from "../../../src/repository/list.repository"
 import tvShowRepository from "../../../src/repository/tvshow.repository"
-import { de } from "zod/v4/locales"
 
 describe("List service", () => {
   beforeEach(() => {
@@ -99,8 +98,8 @@ describe("List service", () => {
         id: "list123",
         name: "My List",
         userId: "user123",
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: new Date("2024-01-01"),
+        updatedAt: new Date("2024-01-01"),
         tvShows: [
           {
             id: "item1",
@@ -110,7 +109,7 @@ describe("List service", () => {
             poster: "http://example.com/poster.jpg",
             premiereDate: new Date("2024-01-01"),
             originalName: "Original Test TV Show",
-            createdAt: new Date(),
+            createdAt: new Date("2024-01-01"),
             order: 1,
           },
           {
@@ -121,7 +120,7 @@ describe("List service", () => {
             poster: "http://example.com/poster.jpg",
             premiereDate: new Date("2024-01-01"),
             originalName: "Original Test TV Show",
-            createdAt: new Date(),
+            createdAt: new Date("2024-01-01"),
             order: 2,
           },
           {
@@ -132,7 +131,7 @@ describe("List service", () => {
             poster: "http://example.com/poster.jpg",
             premiereDate: new Date("2024-01-01"),
             originalName: "Original Test TV Show",
-            createdAt: new Date(),
+            createdAt: new Date("2024-01-01"),
             order: 3,
           },
         ],
@@ -168,8 +167,8 @@ describe("List service", () => {
         id: "list123",
         name: "My List",
         userId: "user123",
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: new Date("2024-01-01"),
+        updatedAt: new Date("2024-01-01"),
         tvShows: [
           {
             id: "item1",
@@ -179,7 +178,7 @@ describe("List service", () => {
             poster: "http://example.com/poster.jpg",
             premiereDate: new Date("2024-01-01"),
             originalName: "Original Test TV Show",
-            createdAt: new Date(),
+            createdAt: new Date("2024-01-01"),
             order: 1,
           },
           {
@@ -190,7 +189,7 @@ describe("List service", () => {
             poster: "http://example.com/poster.jpg",
             premiereDate: new Date("2024-01-01"),
             originalName: "Original Test TV Show",
-            createdAt: new Date(),
+            createdAt: new Date("2024-01-01"),
             order: 2,
           },
           {
@@ -201,7 +200,7 @@ describe("List service", () => {
             poster: "http://example.com/poster.jpg",
             premiereDate: new Date("2024-01-01"),
             originalName: "Original Test TV Show",
-            createdAt: new Date(),
+            createdAt: new Date("2024-01-01"),
             order: 3,
           },
         ],

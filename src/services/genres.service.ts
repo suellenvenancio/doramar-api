@@ -1,11 +1,11 @@
-import genreRepository from "../repository/genres.repository"
+import genresRepository from "../repository/genres.repository"
 
 async function getAllGenres() {
-  return await genreRepository.getAllGenres()
+  return await genresRepository.getAllGenres()
 }
 
-const genreServices = {
+const genresService = {
   getAllGenres,
 }
 
-export { genreServices }
+export default genresService

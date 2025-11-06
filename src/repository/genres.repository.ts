@@ -4,8 +4,8 @@ async function getAllGenres() {
   return await prisma.genres.findMany()
 }
 
-const genreRepository = {
+const genresRepository = {
   getAllGenres,
 }
 
-export default genreRepository
+export default genresRepository
