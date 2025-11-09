@@ -14,10 +14,8 @@ export async function createUser(
       ...userData,
     })
 
-    const { password, ...user } = newUser
-
     return sendResponse(res, 201, "User registered successfully", {
-      ...user,
+      ...newUser,
     })
   } catch (error: Error | any) {
     console.error("Error registering user:", error)

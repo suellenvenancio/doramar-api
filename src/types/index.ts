@@ -12,7 +12,6 @@ export interface RegisterUserInput {
   name: string
   username: string
   email: string
-  password: string
 }
 
 export interface User {

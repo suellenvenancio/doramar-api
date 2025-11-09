@@ -31,9 +31,8 @@ async function createUser(data: RegisterUserInput) {
   try {
     await user.validationUniqueEmail(data.email)
     await user.validationUniqueUsername(data.username)
-    const newUser = await user.hashedPasswordObject(data)
 
-    return user.createUser(newUser)
+    return user.createUser(data)
   } catch (error) {
     console.error("Error creating user:", error)
     throw error

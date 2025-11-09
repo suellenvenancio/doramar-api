@@ -48,7 +48,6 @@ model Users {
   name String
   email String @unique
   username String @unique
-  password String 
   createdAt DateTime @default(now())  
   updatedAt DateTime @updatedAt 
   list Lists[]

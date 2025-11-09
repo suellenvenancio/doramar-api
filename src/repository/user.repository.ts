@@ -1,13 +1,6 @@
 import { prisma } from "../lib/prisma"
 import { AppError } from "../utils/errors"
 import { RegisterUserInput, User } from "../types"
-import password from "./password"
-import { ca } from "zod/v4/locales"
-
-async function hashedPasswordObject(register: RegisterUserInput) {
-  const passwordHashed = await password.hash(register.password)
-  return { ...register, password: passwordHashed }
-}
 
 async function validationUniqueEmail(email: string) {
   const user = await prisma.users.findUnique({
@@ -64,7 +57,6 @@ async function findByEmail(email: string) {
     username: user.username,
     name: user.name,
     email: user.email,
-    password: user.password,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
   }
@@ -121,7 +113,6 @@ const user = {
   deleteUser,
   validationUniqueEmail,
   findUserById,
-  hashedPasswordObject,
   validationUniqueUsername,
   findByEmail,
 }
