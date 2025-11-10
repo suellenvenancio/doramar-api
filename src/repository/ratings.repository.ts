@@ -22,11 +22,6 @@ export async function getRatingsByUserId(userId: string) {
     where: { userId },
     include: {
       tvShow: true,
-      user: {
-        omit: {
-          password: true,
-        },
-      },
       scale: true,
     },
   })
@@ -67,11 +62,7 @@ function getRatingByUserIdAndTvShowId(userId: string, tvShowId: string) {
     },
     include: {
       tvShow: true,
-      user: {
-        omit: {
-          password: true,
-        },
-      },
+
       scale: true,
     },
   })
